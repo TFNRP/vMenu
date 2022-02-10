@@ -1527,6 +1527,17 @@ namespace vMenuClient
                 underglowColorsList.Add(GetLabelText($"CMOD_NEONCOL_{i}"));
             }
             MenuListItem underglowColor = new MenuListItem(GetLabelText("CMOD_NEON_1"), underglowColorsList, 0, "Select the color of the neon underglow.");
+            var underglowAnimationsList = new List<string>()
+            {
+                "None",
+                "Criss Cross",
+                "Fourways",
+                "Lightning",
+                "Blink",
+                "Snake",
+                "Hybrid",
+            };
+            MenuListItem underglowAnimation = new MenuListItem("Animation", underglowAnimationsList, 0, "Select the animation of the neon underglow.");
 
             VehicleUnderglowMenu.AddMenuItem(underglowFront);
             VehicleUnderglowMenu.AddMenuItem(underglowBack);
@@ -1534,6 +1545,7 @@ namespace vMenuClient
             VehicleUnderglowMenu.AddMenuItem(underglowRight);
 
             VehicleUnderglowMenu.AddMenuItem(underglowColor);
+            VehicleUnderglowMenu.AddMenuItem(underglowAnimation);
 
             menu.OnItemSelect += (sender, item, index) =>
             {
@@ -1631,14 +1643,22 @@ namespace vMenuClient
 
             VehicleUnderglowMenu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
             {
-                if (item == underglowColor)
+                if (Game.PlayerPed.IsInVehicle())
                 {
-                    if (Game.PlayerPed.IsInVehicle())
+                    if (item == underglowColor)
                     {
                         Vehicle veh = GetVehicle();
                         if (veh.Mods.HasNeonLights)
                         {
                             veh.Mods.NeonLightsColor = GetColorFromIndex(newIndex);
+                        }
+                    }
+                    else if (item == underglowAnimation)
+                    {
+                        Vehicle veh = GetVehicle();
+                        if (veh.Mods.HasNeonLights && DecorIsRegisteredAsType("_Underglow_Animation", 3))
+                        {
+                            DecorSetFloat(veh.Handle, "_Underglow_Animation", newIndex);
                         }
                     }
                 }
